@@ -126,7 +126,6 @@ export default class Counter extends Component {
             imgList.map(img => (<Pane
               elevation={2}
               height={120}
-              flexGrow={1}
               backgroundImage={`url(${img})`}
               backgroundSize="cover"
               backgroundPosition="center"
