@@ -1,29 +1,26 @@
 import React from 'react'
 import { hot } from 'react-hot-loader/root'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { Pane, Tablist, Tab } from 'evergreen-ui'
 
-import HelloWorld from './pages/HelloWorld'
-import Counter from './pages/Counter'
+import Home from './pages/Home'
+import ImageKiller from './pages/ImageKiller'
 
 function App () {
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Hello World</Link>
-            </li>
-            <li>
-              <Link to="/counter">Counter</Link>
-            </li>
-          </ul>
-        </nav>
+    <Pane>
+      <Router>
+        <Pane elevation={2} padding={8} marginBottom={16}>
+          <Tablist flexBasis={240}>
+            <Tab><Link to="/">主页</Link></Tab>
+            <Tab><Link to="/imageKiller">图片处理</Link></Tab>
+          </Tablist>
+        </Pane>
 
-        <Route path="/" exact component={HelloWorld} />
-        <Route path="/counter" component={Counter} />
-      </div>
-    </Router>
+        <Route path="/" exact component={Home} />
+        <Route path="/imageKiller" component={ImageKiller} />
+      </Router>
+    </Pane>
   )
 }
 

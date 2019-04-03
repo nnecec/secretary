@@ -26,6 +26,10 @@ module.exports = env => {
           use: ['babel-loader']
         },
         {
+          test: /\.node$/,
+          use: 'node-loader'
+        },
+        {
           test: /\.css$/,
           use: ['style-loader', 'css-loader']
         }
