@@ -28,17 +28,20 @@
     "unit": "electron-mocha temp/specs.js --renderer --require source-map-support/register"
   },
   "dependencies": {
+    "@rematch/core": "^1.1.0",
     "compressorjs": "^1.0.5",
     "evergreen-ui": "^4.15.0",
     "fs-jetpack": "^2.2.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-redux": "^6.0.1",
     "react-router-dom": "^5.0.0",
     "sharp": "^0.22.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.4.0",

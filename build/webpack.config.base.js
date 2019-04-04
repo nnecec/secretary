@@ -15,7 +15,8 @@ module.exports = env => {
     // externals: [...Object.keys(dependencies || {})],
     resolve: {
       alias: {
-        env: path.resolve(__dirname, `../config/env_${env}.json`)
+        env: path.resolve(__dirname, `../config/env_${env}.json`),
+        utils: path.resolve(__dirname, '../src/utils')
       }
     },
     module: {
