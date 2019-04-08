@@ -29,9 +29,11 @@
   },
   "dependencies": {
     "@rematch/core": "^1.1.0",
+    "@rematch/immer": "^1.1.0",
     "compressorjs": "^1.0.5",
     "evergreen-ui": "^4.15.0",
     "fs-jetpack": "^2.2.2",
+    "immer": "^2.1.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^6.0.1",
