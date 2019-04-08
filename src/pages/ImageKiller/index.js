@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import { Pane, Button, FilePicker, Text, Strong, Small, TextInput, Heading, FormField, TextInputField, ThemeConsumer, Checkbox, Link, Paragraph } from 'evergreen-ui'
-import fs from 'fs'
-import Compressor from 'compressorjs'
+import { Pane, Button, FilePicker, TextInputField, ThemeConsumer, Checkbox, Link, Paragraph } from 'evergreen-ui'
 import { connect } from 'react-redux'
 
+import { saveAs } from 'file-saver'
+import fs from 'fs'
+import JSZip from 'jszip'
+import Compressor from 'compressorjs'
 
 import { formatImageSize } from '../../utils/image'
 
@@ -12,6 +14,8 @@ import { formatImageSize } from '../../utils/image'
 }), dispatch => ({
   addFileList: dispatch.imageKiller.addFileList,
   removeFile: dispatch.imageKiller.removeFile,
+  modifyChecked: dispatch.imageKiller.modifyChecked,
+  modifyConfiguration: dispatch.imageKiller.modifyConfiguration,
 })
 )
 export default class Counter extends Component {
@@ -31,7 +35,7 @@ export default class Counter extends Component {
       strict: false,
       success: (result) => {
         console.log(result)
-        this.handleImageDownload(result, imgData)
+        this.appendToFileList(result, imgData)
       },
       error: (err) => {
         console.log(err)
@@ -39,7 +43,8 @@ export default class Counter extends Component {
     })
   }
 
-  handleImageDownload = (blob, file) => {
+  // 添加到 fileList
+  appendToFileList = (blob, file) => {
     const { addFileList } = this.props
     const imgBlob = blob
     const url = URL.createObjectURL(imgBlob)
@@ -50,21 +55,52 @@ export default class Counter extends Component {
       url,
       size: blob.size,
       originSize: file.size,
+      checked: true,
+      blob
     }
 
     addFileList(img)
+  }
 
+  // 打包下载已勾选的图片
+  downloadFiles = () => {
+    const { fileList } = this.props
+    const zip = new JSZip()
+    fileList.forEach(file => {
+      if (file.checked) {
+        zip.file(file.name, file.blob)
+      }
+    })
 
-    // const link = document.createElement('a')
-    // link.href = objectURL
-    // link.download = file.name
-    // link.click()
-    // URL.revokeObjectURL(objectURL)
+    zip.generateAsync({ type: 'blob' })
+      .then((content) => {
+        saveAs(content, 'image.zip')
+      })
+  }
+
+  // 全选图片
+  handleSelectAll = () => {
+    const { fileList, modifyChecked } = this.props
+    const checked = !fileList[0].checked
+    fileList.forEach((file, index) => {
+      modifyChecked({ index, checked })
+    })
+  }
+
+  // 删除已勾选图片
+  deleteFiles = () => {
+    const { fileList, removeFile } = this.props
+    fileList.forEach((file, index) => {
+      if (file.checked) {
+        URL.revokeObjectURL(file.url)
+        removeFile(index)
+      }
+    })
   }
 
 
   render() {
-    const { maxSize, quality, fileList, removeFile } = this.props
+    const { maxSize, quality, fileList, removeFile, modifyChecked, modifyConfiguration } = this.props
 
     return (
       <Pane>
@@ -79,22 +115,22 @@ export default class Counter extends Component {
               multiple
               accept="image/*"
               width={250}
+              marginBottom={16}
               onChange={this.handleFilePickerChange}
             />
           </Pane>
           <Pane
             display="flex">
             <TextInputField
-              padding={8}
               required
+              marginRight={16}
               label="体积最大值"
               description="MB"
               type="number"
               value={maxSize}
-              onChange={e => this.setState({ maxSize: e.target.value })}
+              onChange={e => modifyConfiguration({ attr: 'maxSize', value: e.target.value })}
             />
             <TextInputField
-              padding={8}
               required
               label="图片优化质量"
               description="0<x<1"
@@ -102,8 +138,13 @@ export default class Counter extends Component {
               min="0"
               max="1"
               value={quality}
-              onChange={e => this.setState({ quality: e.target.value })}
+              onChange={e => modifyConfiguration({ attr: 'quality', value: e.target.value })}
             />
+          </Pane>
+          <Pane>
+            <Button appearance="primary" marginRight={8} onClick={this.downloadFiles}>下载</Button>
+            <Button marginRight={8} onClick={this.handleSelectAll}>全选</Button>
+            <Button appearance="minimal" intent="danger" onClick={this.deleteFiles}>删除</Button>
           </Pane>
         </Pane>
 
@@ -116,37 +157,37 @@ export default class Counter extends Component {
             padding={8}
           >
             {
-              fileList.map(img => (<Pane
-                key={img.key}
-                width={200}
-                height={120}
-                backgroundImage={`url(${img.url})`}
-                backgroundSize="cover"
-                backgroundPosition="center"
-                margin={8}
-              >
-                <ThemeConsumer>
-                  {theme => (
-                    <Pane
-                      backgroundColor={theme.palette.neutral.light}
-                      padding={8}
-
-                      opacity={0.8}>
-                      <Paragraph size={300}>
-                        大小: {formatImageSize(img.size)}
-                      </Paragraph>
-                      <Paragraph size={300}>
-                        原大小: {formatImageSize(img.originSize)}
-                        <Text float="right" size={300}>
-                          <Link href={img.url} download={img.name}>下载</Link>
-                          <Link onClick={() => removeFile(img)}>下载</Link>
-                        </Text>
-
-                      </Paragraph>
-                    </Pane>
-                  )}
-                </ThemeConsumer>
-              </Pane>))
+              fileList.map((img, index) => (
+                <Checkbox
+                  checked={img.checked}
+                  onChange={e => modifyChecked({ checked: e.target.checked, index })}
+                  label={<Pane
+                    key={img.key}
+                    width={200}
+                    height={120}
+                    backgroundImage={`url(${img.url})`}
+                    backgroundSize="cover"
+                    backgroundPosition="center"
+                    margin={8}
+                  >
+                    <ThemeConsumer>
+                      {theme => (
+                        <Pane
+                          backgroundColor={theme.palette.neutral.light}
+                          padding={8}
+                          opacity={0.7}>
+                          <Paragraph size={300}>
+                            大小: {formatImageSize(img.size)}
+                          </Paragraph>
+                          <Paragraph size={300}>
+                            原大小: {formatImageSize(img.originSize)}
+                          </Paragraph>
+                        </Pane>
+                      )}
+                    </ThemeConsumer>
+                  </Pane>}
+                ></Checkbox>
+              ))
             }
           </Pane>
         }
