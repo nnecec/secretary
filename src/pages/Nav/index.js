@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Pane, Tablist, Tab } from 'evergreen-ui'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
+import { navList } from './routes'
 
 @connect(state => ({
   router: state.router
@@ -10,18 +11,6 @@ export default class Nav extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      navList: [{
-        mean: '主页',
-        link: '/'
-      }, {
-        mean: '图片',
-        link: '/imageKiller'
-      }, {
-        mean: '文章',
-        link: '/articleGuard'
-      }]
-    }
   }
 
   handleLink = (route) => {
@@ -29,7 +18,6 @@ export default class Nav extends Component {
   }
 
   render() {
-    const { navList } = this.state
     const { router } = this.props
     const pathname = router.location.pathname
 

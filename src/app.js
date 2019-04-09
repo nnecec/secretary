@@ -7,7 +7,7 @@ import { Pane, Tablist, Tab } from 'evergreen-ui'
 
 import { history } from './store'
 
-import Nav from './pages/shared/Nav'
+import Nav from './pages/Nav'
 import Home from './pages/Home'
 import ImageKiller from './pages/ImageKiller'
 import ArticleGuard from './pages/ArticleGuard'
