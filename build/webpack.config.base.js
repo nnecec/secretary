@@ -2,7 +2,7 @@ const path = require('path')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const { dependencies } = require('../package.json')
+// const { dependencies } = require('../package.json')
 
 module.exports = env => {
   return {
@@ -12,7 +12,6 @@ module.exports = env => {
       __dirname: false,
       __filename: false
     },
-    // externals: [...Object.keys(dependencies || {})],
     resolve: {
       alias: {
         env: path.resolve(__dirname, `../config/env_${env}.json`),
@@ -39,10 +38,11 @@ module.exports = env => {
     plugins: [
       new FriendlyErrorsWebpackPlugin({ clearConsole: env === 'development' }),
       new HTMLWebpackPlugin({
-        title: 'electron react boilerplate',
+        title: 'Secretary',
         template: path.resolve(__dirname, '../config/index.html')
       }),
       new webpack.NamedModulesPlugin()
+
     ]
   }
 }

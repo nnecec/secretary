@@ -1,13 +1,14 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A React boilerplate build on electron.",
+  "name": "secretary",
+  "description": "Wechat secretary",
   "version": "0.0.0",
   "private": true,
   "main": "dist/background.js",
   "build": {
-    "appId": "com.example.electron-react-boilerplate",
+    "appId": "nnecec.secretary",
+    "productName": "secretary",
     "files": [
-      "app/**/*",
+      "dist/**/*",
       "node_modules/**/*",
       "package.json"
     ],
@@ -22,7 +23,7 @@
     "postinstall": "electron-builder install-app-deps",
     "preunit": "webpack --config=build/webpack.unit.config.js --env=test --display=none",
     "pree2e": "webpack --config=build/webpack.config.prod.js --env=test --display=none && webpack --config=build/webpack.e2e.config.js --env=test --display=none",
-    "release": "npm test && webpack --config=build/webpack.config.prod.js --env=production && electron-builder",
+    "release": "cross-env NODE_ENV=production webpack --config=build/webpack.config.prod.js && electron-builder",
     "start": "node build/start.js",
     "test": "npm run unit && npm run e2e",
     "unit": "electron-mocha temp/specs.js --renderer --require source-map-support/register"
@@ -41,8 +42,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^6.0.1",
-    "react-router-dom": "^5.0.0",
-    "sharp": "^0.22.0"
+    "react-router-dom": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",

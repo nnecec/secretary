@@ -43,7 +43,7 @@ app.on('ready', () => {
   } else {
     mainWindow.loadURL(
       url.format({
-        pathname: path.resolve(__dirname, '../app/index.html'),
+        pathname: path.resolve(__dirname, '../dist/index.html'),
         protocol: 'file:',
         slashes: true
       })
