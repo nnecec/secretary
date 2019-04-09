@@ -30,6 +30,8 @@ export default class Counter extends Component {
   handleImageCompress = (imgData) => {
     const { maxSize, quality } = this.props
 
+    console.dir(imgData)
+
     new Compressor(imgData, {
       quality,
       strict: false,

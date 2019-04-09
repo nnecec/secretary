@@ -30,7 +30,9 @@
   "dependencies": {
     "@rematch/core": "^1.1.0",
     "@rematch/immer": "^1.1.0",
+    "@rematch/loading": "^0.5.1",
     "compressorjs": "^1.0.5",
+    "connected-react-router": "^6.3.2",
     "evergreen-ui": "^4.15.0",
     "file-saver": "^2.0.1",
     "fs-jetpack": "^2.2.2",
