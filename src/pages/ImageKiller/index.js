@@ -22,22 +22,63 @@ export default class Counter extends Component {
 
   handleFilePickerChange = (files) => {
     files.map(file => {
-      this.handleImageCompress(file)
+
+      const img = {
+        key: `${file.lastModified}${file.name}`,
+        name: file.name,
+        // size: file.size,
+        originSize: file.size,
+        checked: true,
+        blob: file
+      }
+
+      this.handleImageCompress(img)
     })
   }
 
+  // 判断图片 决定压缩参数
+  judgeImgSize = (imgData) => {
+    const { maxSize } = this.props
+
+    if (imgData.blob.size > maxSize * 1000 * 1000) { // 如果超出设置的体积最大值
+      const reader = new FileReader()
+      const img = new Image()
+
+      const gap = Math.pow((imgData.blob.size - maxSize * 1000 * 1000) / imgData.blob.size, 2)
+
+      reader.readAsDataURL(imgData.blob)
+      reader.onload = () => {
+        img.src = reader.result
+        img.onload = () => {
+          const width = img.naturalWidth * (1 - gap)
+          const height = img.naturalHeight * (1 - gap)
+          this.handleImageCompress(imgData, { width, height })
+        }
+      }
+    } else {
+      this.handleImageCompress(imgData)
+    }
+
+  }
+
   // 压缩图片
-  handleImageCompress = (imgData) => {
-    const { maxSize, quality } = this.props
+  handleImageCompress = (imgData, options = {}) => {
+    const { width = 0, height = 0 } = options
+    const { quality, maxSize } = this.props
 
-    console.dir(imgData)
-
-    new Compressor(imgData, {
+    new Compressor(imgData.blob, {
       quality,
       strict: false,
+      width,
+      height,
       success: (result) => {
-        console.log(result)
-        this.appendToFileList(result, imgData)
+        imgData.blob = result
+
+        if (result.size > maxSize * 1000 * 1000) {
+          this.judgeImgSize(imgData)
+        } else {
+          this.appendToFileList(imgData)
+        }
       },
       error: (err) => {
         console.log(err)
@@ -45,23 +86,16 @@ export default class Counter extends Component {
     })
   }
 
+
+
   // 添加到 fileList
-  appendToFileList = (blob, file) => {
+  appendToFileList = (imgData) => {
     const { addFileList } = this.props
-    const imgBlob = blob
-    const url = URL.createObjectURL(imgBlob)
+    const url = URL.createObjectURL(imgData.blob)
+    imgData.size = imgData.blob.size
+    imgData.url = url
 
-    const img = {
-      key: `${blob.lastModified}${blob.name}`,
-      name: blob.name,
-      url,
-      size: blob.size,
-      originSize: file.size,
-      checked: true,
-      blob
-    }
-
-    addFileList(img)
+    addFileList(imgData)
   }
 
   // 打包下载已勾选的图片

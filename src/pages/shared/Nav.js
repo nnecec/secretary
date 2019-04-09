@@ -27,6 +27,7 @@ export default class Nav extends Component {
   handleLink = (route) => {
     this.props.dispatch(push(route))
   }
+
   render() {
     const { navList } = this.state
     const { router } = this.props
