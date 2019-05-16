@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Pane, Button } from 'evergreen-ui'
+import { Paper, Button } from '@material-ui/core'
 import { connect } from 'react-redux'
 
 @connect(state => ({
@@ -15,12 +15,12 @@ export default class ArticleGuard extends Component {
     const { count, increment, decrement } = this.props
     console.log(this.props)
     return (
-      <Pane>
+      <Paper>
         Article Guard
         {count}
         <Button onClick={increment}>增加</Button>
         <Button onClick={decrement}>减少</Button>
-      </Pane>
+      </Paper>
     )
   }
 }

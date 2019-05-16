@@ -1,10 +1,10 @@
 export const navList = [{
-  mean: '主页',
-  link: '/'
+  label: '主页',
+  path: '/'
 }, {
-  mean: '图片',
-  link: '/imageKiller'
+  label: '图片',
+  path: '/imageKiller'
 }, {
-  mean: '文章',
-  link: '/articleGuard'
+  label: '文章',
+  path: '/articleGuard'
 }]

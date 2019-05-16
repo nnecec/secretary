@@ -1,34 +1,42 @@
-import React, { Component } from 'react'
-import { Pane, Tablist, Tab } from 'evergreen-ui'
+import React from 'react'
 import { connect } from 'react-redux'
-import { push } from 'connected-react-router'
+import { Link } from 'react-router-dom'
+
+import { AppBar, Toolbar, Button } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
 import { navList } from './routes'
 
-@connect(state => ({
-  router: state.router
+const useStyles = makeStyles(theme => ({
+  button: {
+    color: theme.palette.primary[50],
+    marginRight: theme.spacing(1)
+  }
 }))
-export default class Nav extends Component {
 
-  constructor(props) {
-    super(props)
-  }
+function Nav (props) {
+  const classes = useStyles()
+  const { router } = props
+  const { pathname } = router.location
 
-  handleLink = (route) => {
-    this.props.dispatch(push(route))
-  }
-
-  render() {
-    const { router } = this.props
-    const pathname = router.location.pathname
-
-    return (<Pane elevation={2} padding={8} marginBottom={16}>
-      <Tablist flexBasis={240} >
+  return (
+    <AppBar position="static">
+      <Toolbar>
         {
           navList.map(nav => (
-            <Tab onSelect={() => this.handleLink(nav.link)} isSelected={pathname === nav.link}>{nav.mean}</Tab>
+            <Button
+              variant={pathname === nav.path ? 'contained' : null}
+              color="primary"
+              className={classes.button}
+              key={nav.path}
+              component={Link}
+              to={nav.path}>{nav.label}
+            </Button>
           ))
         }
-      </Tablist>
-    </Pane>)
-  }
+      </Toolbar>
+    </AppBar>
+  )
 }
+
+export default connect(state => ({ router: state.router }), {})(Nav)

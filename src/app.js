@@ -1,9 +1,9 @@
 import React from 'react'
 import { hot } from 'react-hot-loader/root'
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
-import { ConnectedRouter, push, replace } from 'connected-react-router'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { ConnectedRouter } from 'connected-react-router'
 
-import { Pane, Tablist, Tab } from 'evergreen-ui'
+import 'normalize.css'
 
 import { history } from './store'
 
@@ -14,8 +14,7 @@ import ArticleGuard from './pages/ArticleGuard'
 
 function App () {
   return (
-
-    <Pane>
+    <div>
       <ConnectedRouter history={history}>
         <Nav></Nav>
         <Switch>
@@ -24,7 +23,7 @@ function App () {
           <Route path="/articleGuard" component={ArticleGuard} />
         </Switch>
       </ConnectedRouter>
-    </Pane>
+    </div>
   )
 }
 

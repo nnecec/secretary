@@ -1,15 +1,10 @@
 import React from 'react'
-import { Pane, Heading } from 'evergreen-ui'
+import { Box, Typography } from '@material-ui/core'
 
 export default function HelloWorld () {
   return (
-    <Pane
-      width={'100%'}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Heading>Hello 👋</Heading>
-    </Pane>
+    <Box>
+      <Typography>Hello 👋</Typography>
+    </Box>
   )
 }
