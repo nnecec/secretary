@@ -1,23 +1,25 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "es6": true
+  parser: 'babel-eslint',
+  env: {
+    browser: true,
+    node: true,
+    es6: true
+  },
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "standard"
+  ],
+  globals: {
+    Atomics: "readonly",
+    SharedArrayBuffer: "readonly"
+  },
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true
     },
-    "extends": "standard",
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-    }
+    ecmaVersion: 2018,
+    sourceType: "module"
+  },
+  rules: {}
 };

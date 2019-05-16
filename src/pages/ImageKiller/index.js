@@ -1,26 +1,22 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import {
   Box,
-  Grid,
   Button,
   Checkbox,
   TextField,
   InputAdornment,
   Paper,
-  Card,
-  CardHeader,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-  Container
+
+  Container,
+  GridList,
+  GridListTile,
+  GridListTileBar
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { saveAs } from 'file-saver'
-import fs from 'fs'
 import JSZip from 'jszip'
 import Compressor from 'compressorjs'
 
@@ -29,7 +25,8 @@ import { formatImageSize } from '../../utils/image'
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -62,10 +59,9 @@ const useStyles = makeStyles(theme => ({
 function ImageKiller (props) {
   //
   function handleFilePickerChange (e) {
-    console.log(e.target.files)
     const files = e.target.files
     Array.from(files).map(file => {
-      const img = {
+      const tile = {
         key: `${file.lastModified}${file.name}`,
         name: file.name,
         // size: file.size,
@@ -186,7 +182,7 @@ function ImageKiller (props) {
     modifyConfiguration
   } = props
   const classes = useStyles()
-  console.log(fileList)
+
   return (
     <Container>
       <Paper className={classes.paper}>
@@ -247,28 +243,23 @@ function ImageKiller (props) {
 
       {fileList && fileList.length > 0 && (
         <Paper className={classes.paper}>
-          {fileList.map((img, index) => (
-            <Card className={classes.card}>
-
-              <CardMedia
-                className={classes.cardMedia}
-                image={img.url}
-                title={img.name}
-              />
-              <CardContent>
-                <Typography variant="body2" component="p">
-                  大小: {formatImageSize(img.size)}
-                  <br />
-                  原大小: {formatImageSize(img.originSize)}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Checkbox color="primary" checked={img.checked} onChange={e => modifyChecked({ checked: e.target.checked, index })} />
-              </CardActions>
-            </Card>
-          ))}
+          <GridList cellHeight={200} className={classes.gridList}>
+            {fileList.map((tile, index) => (
+              <GridListTile key={tile.url} cols={0.5} rows={1}>
+                <img src={tile.url} alt={tile.name} />
+                <GridListTileBar
+                  title={tile.name}
+                  subtitle={<span>大小: {formatImageSize(tile.size)} 原大小: {formatImageSize(tile.originSize)}</span>}
+                  actionIcon={
+                    <Checkbox color="primary" checked={tile.checked} onChange={e => modifyChecked({ checked: e.target.checked, index })} />
+                  }
+                />
+              </GridListTile>
+            ))}
+          </GridList>
         </Paper>
       )}
+
     </Container>
   )
 }
