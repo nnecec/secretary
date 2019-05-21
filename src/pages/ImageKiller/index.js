@@ -7,8 +7,11 @@ import {
   Checkbox,
   TextField,
   InputAdornment,
-  Paper,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 
+  Paper,
   Container,
   GridList,
   GridListTile,
@@ -26,7 +29,8 @@ const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
     marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
+    position: 'relative'
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -57,11 +61,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 function ImageKiller (props) {
+  const [removeModalVisible, setRemoveModalVisible] = React.useState(false)
+  let queue = 0
   //
   function handleFilePickerChange (e) {
+    const { loadingStart } = props
     const files = e.target.files
+    loadingStart()
+    queue = files.length
     Array.from(files).map(file => {
-      const tile = {
+      const img = {
         key: `${file.lastModified}${file.name}`,
         name: file.name,
         // size: file.size,
@@ -130,11 +139,13 @@ function ImageKiller (props) {
 
   // 添加到 fileList
   function appendToFileList (imgData) {
-    const { addFileList } = props
+    const { addFileList, loadingEnd } = props
     const url = URL.createObjectURL(imgData.blob)
     imgData.size = imgData.blob.size
     imgData.url = url
 
+    queue--
+    if (queue === 0) loadingEnd()
     addFileList(imgData)
   }
 
@@ -149,28 +160,31 @@ function ImageKiller (props) {
     })
 
     zip.generateAsync({ type: 'blob' }).then(content => {
-      saveAs(content, 'image.zip')
+      saveAs(content, `images${Date.now()}.zip`)
     })
   }
 
   // 全选图片
   function handleSelectAll () {
-    const { fileList, modifyChecked } = props
+    const { fileList, modifyChecked, loadingStart } = props
     const checked = !fileList[0].checked
     fileList.forEach((file, index) => {
       modifyChecked({ index, checked })
     })
   }
 
+  // 弹出删除确认框
+
   // 删除已勾选图片
-  function deleteFiles () {
+  function removeFiles () {
     const { fileList, removeFile } = props
     fileList.forEach((file, index) => {
       if (file.checked) {
         URL.revokeObjectURL(file.url)
-        removeFile(index)
+        removeFile()
       }
     })
+    setRemoveModalVisible(false)
   }
 
   const {
@@ -186,6 +200,7 @@ function ImageKiller (props) {
   return (
     <Container>
       <Paper className={classes.paper}>
+
         <form>
           <TextField
             className={classes.textField}
@@ -235,7 +250,7 @@ function ImageKiller (props) {
             下载
           </Button>
           <Button onClick={handleSelectAll}>全选</Button>
-          <Button color="secondary" onClick={deleteFiles}>
+          <Button color="secondary" onClick={() => setRemoveModalVisible(true)}>
             删除
           </Button>
         </Box>
@@ -260,6 +275,21 @@ function ImageKiller (props) {
         </Paper>
       )}
 
+      <Dialog
+        open={removeModalVisible}
+        onClose={() => setRemoveModalVisible(false)}
+      >
+        <DialogTitle>确认删除已勾选的图片吗？</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setRemoveModalVisible(false)}>
+            取消
+          </Button>
+          <Button onClick={removeFiles} color="primary" autoFocus>
+            确认
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Container>
   )
 }
@@ -272,6 +302,9 @@ export default connect(
     addFileList: dispatch.imageKiller.addFileList,
     removeFile: dispatch.imageKiller.removeFile,
     modifyChecked: dispatch.imageKiller.modifyChecked,
-    modifyConfiguration: dispatch.imageKiller.modifyConfiguration
+    modifyConfiguration: dispatch.imageKiller.modifyConfiguration,
+
+    loadingStart: dispatch.loading.loadingStart,
+    loadingEnd: dispatch.loading.loadingEnd
   })
 )(ImageKiller)

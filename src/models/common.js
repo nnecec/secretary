@@ -3,9 +3,11 @@ export const loading = {
   reducers: {
     loadingStart: (state, payload) => {
       state = true
+      return state
     },
     loadingEnd: (state, payload) => {
       state = false
+      return state
     }
   }
 }

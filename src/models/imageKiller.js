@@ -10,7 +10,7 @@ export default {
       return state
     },
     removeFile (state, payload) {
-      state.fileList.splice(payload, 1)
+      state.fileList = state.fileList.filter(file => !file.checked)
       return state
     },
     modifyChecked (state, payload) {
