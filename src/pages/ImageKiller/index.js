@@ -62,10 +62,11 @@ const useStyles = makeStyles(theme => ({
 
 function ImageKiller (props) {
   const [removeModalVisible, setRemoveModalVisible] = React.useState(false)
+
+  const { loadingStart, loadingEnd, maxSize, quality, addFileList, fileList, modifyChecked, modifyConfiguration } = props
   let queue = 0
-  //
+
   function handleFilePickerChange (e) {
-    const { loadingStart } = props
     const files = e.target.files
     loadingStart()
     queue = files.length
@@ -86,8 +87,6 @@ function ImageKiller (props) {
 
   // 判断图片 决定压缩参数
   function judgeImgSize (imgData) {
-    const { maxSize } = props
-
     if (imgData.blob.size > maxSize * 1000 * 1000) {
       // 如果超出设置的体积最大值
       const reader = new FileReader()
@@ -115,7 +114,6 @@ function ImageKiller (props) {
   // 压缩图片
   function handleImageCompress (imgData, options = {}) {
     const { width = 0, height = 0 } = options
-    const { quality, maxSize } = props
 
     new Compressor(imgData.blob, {
       quality,
@@ -139,7 +137,6 @@ function ImageKiller (props) {
 
   // 添加到 fileList
   function appendToFileList (imgData) {
-    const { addFileList, loadingEnd } = props
     const url = URL.createObjectURL(imgData.blob)
     imgData.size = imgData.blob.size
     imgData.url = url
@@ -151,7 +148,6 @@ function ImageKiller (props) {
 
   // 打包下载已勾选的图片
   function downloadFiles () {
-    const { fileList } = props
     const zip = new JSZip()
     fileList.forEach(file => {
       if (file.checked) {
@@ -166,18 +162,14 @@ function ImageKiller (props) {
 
   // 全选图片
   function handleSelectAll () {
-    const { fileList, modifyChecked, loadingStart } = props
     const checked = !fileList[0].checked
     fileList.forEach((file, index) => {
       modifyChecked({ index, checked })
     })
   }
 
-  // 弹出删除确认框
-
   // 删除已勾选图片
   function removeFiles () {
-    const { fileList, removeFile } = props
     fileList.forEach((file, index) => {
       if (file.checked) {
         URL.revokeObjectURL(file.url)
@@ -187,14 +179,7 @@ function ImageKiller (props) {
     setRemoveModalVisible(false)
   }
 
-  const {
-    maxSize,
-    quality,
-    fileList,
-    removeFile,
-    modifyChecked,
-    modifyConfiguration
-  } = props
+
   const classes = useStyles()
 
   return (
@@ -220,11 +205,11 @@ function ImageKiller (props) {
             required
             label="图片优化质量"
             InputProps={{
-              endAdornment: <InputAdornment position="edn">%</InputAdornment>
+              endAdornment: <InputAdornment position="edn"></InputAdornment>
             }}
             type="number"
-            min="0"
-            max="1"
+            min={0}
+            max={1}
             value={quality}
             onChange={e =>
               modifyConfiguration({ attr: 'quality', value: e.target.value })
@@ -260,7 +245,7 @@ function ImageKiller (props) {
         <Paper className={classes.paper}>
           <GridList cellHeight={200} className={classes.gridList}>
             {fileList.map((tile, index) => (
-              <GridListTile key={tile.url} cols={0.5} rows={1}>
+              <GridListTile key={tile.url} cols={0.666} rows={1}>
                 <img src={tile.url} alt={tile.name} />
                 <GridListTileBar
                   title={tile.name}
