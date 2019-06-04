@@ -18,6 +18,11 @@ module.exports = env => {
       filename: '[name].js',
       path: path.resolve(__dirname, '../dist')
     },
+    resolve: {
+      alias: {
+        'react-dom': '@hot-loader/react-dom'
+      }
+    },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin()

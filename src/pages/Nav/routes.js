@@ -6,5 +6,5 @@ export const navList = [{
   path: '/imageKiller'
 }, {
   label: '文章',
-  path: '/articleGuard'
+  path: '/articleKiller'
 }]

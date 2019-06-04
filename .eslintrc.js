@@ -21,5 +21,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: "module"
   },
-  rules: {}
+  rules: {
+    "react/prop-types": "ignore"
+  }
 };

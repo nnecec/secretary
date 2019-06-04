@@ -10,7 +10,7 @@ import { history } from './store'
 import Nav from './pages/Nav'
 import Home from './pages/Home'
 import ImageKiller from './pages/ImageKiller'
-import ArticleGuard from './pages/ArticleGuard'
+import ArticleKiller from './pages/ArticleKiller'
 
 function App () {
   return (
@@ -20,7 +20,7 @@ function App () {
         <Switch>
           <Route path="/" exact component={Home} />
           <Route path="/imageKiller" component={ImageKiller} />
-          <Route path="/articleGuard" component={ArticleGuard} />
+          <Route path="/articleKiller" component={ArticleKiller} />
         </Switch>
       </ConnectedRouter>
     </div>

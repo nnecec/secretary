@@ -115,6 +115,7 @@ function ImageKiller (props) {
   function handleImageCompress (imgData, options = {}) {
     const { width = 0, height = 0 } = options
 
+    // eslint-disable-next-line no-new
     new Compressor(imgData.blob, {
       quality,
       strict: false,
@@ -179,20 +180,18 @@ function ImageKiller (props) {
     setRemoveModalVisible(false)
   }
 
-
   const classes = useStyles()
 
   return (
     <Container>
       <Paper className={classes.paper}>
-
         <form>
           <TextField
             className={classes.textField}
             required
             label="体积最大值"
             InputProps={{
-              endAdornment: <InputAdornment position="edn">MB</InputAdornment>
+              endAdornment: <InputAdornment position="end">MB</InputAdornment>
             }}
             type="number"
             value={maxSize}
@@ -203,10 +202,7 @@ function ImageKiller (props) {
           <TextField
             className={classes.textField}
             required
-            label="图片优化质量"
-            InputProps={{
-              endAdornment: <InputAdornment position="edn"></InputAdornment>
-            }}
+            label="优化系数"
             type="number"
             min={0}
             max={1}
