@@ -63,26 +63,28 @@ const useStyles = makeStyles(theme => ({
 function ImageKiller (props) {
   const [removeModalVisible, setRemoveModalVisible] = React.useState(false)
 
-  const { loadingStart, loadingEnd, maxSize, quality, addFileList, fileList, modifyChecked, modifyConfiguration } = props
+  const { loadingStart, loadingEnd, maxSize, quality, addFileList, removeFile, fileList, modifyChecked, modifyConfiguration } = props
   let queue = 0
 
   function handleFilePickerChange (e) {
-    const files = e.target.files
-    loadingStart()
-    queue = files.length
-    Array.from(files).map(file => {
-      const img = {
-        key: `${file.lastModified}${file.name}`,
-        name: file.name,
-        // size: file.size,
-        originSize: file.size,
-        checked: true,
-        blob: file,
-        type: file.type
-      }
+    if (e ?.target ?.files ?.length > 0) {
+      const files = e.target.files
+      loadingStart()
+      queue = files.length
+      Array.from(files).map(file => {
+        const img = {
+          key: `${file.lastModified}${file.name}`,
+          name: file.name,
+          // size: file.size,
+          originSize: file.size,
+          checked: true,
+          blob: file,
+          type: file.type
+        }
 
-      handleImageCompress(img)
-    })
+        handleImageCompress(img)
+      })
+    }
   }
 
   // 判断图片 决定压缩参数
@@ -115,7 +117,7 @@ function ImageKiller (props) {
   function handleImageCompress (imgData, options = {}) {
     const { width = 0, height = 0 } = options
 
-    // eslint-disable-next-line no-new
+    // eslint-disable-next-line
     new Compressor(imgData.blob, {
       quality,
       strict: false,
@@ -171,6 +173,7 @@ function ImageKiller (props) {
 
   // 删除已勾选图片
   function removeFiles () {
+    console.log(fileList)
     fileList.forEach((file, index) => {
       if (file.checked) {
         URL.revokeObjectURL(file.url)
@@ -227,34 +230,36 @@ function ImageKiller (props) {
               上传
             </Button>
           </label>
-          <Button color="primary" onClick={downloadFiles}>
+          <Button color="primary" onClick={downloadFiles} disabled={fileList ?.length === 0}>
             下载
           </Button>
-          <Button onClick={handleSelectAll}>全选</Button>
-          <Button color="secondary" onClick={() => setRemoveModalVisible(true)}>
+          <Button onClick={handleSelectAll} disabled={fileList ?.length === 0}>全选</Button>
+          <Button color="secondary" onClick={() => setRemoveModalVisible(true)} disabled={fileList ?.length === 0}>
             删除
           </Button>
         </Box>
       </Paper>
 
-      {fileList && fileList.length > 0 && (
-        <Paper className={classes.paper}>
-          <GridList cellHeight={200} className={classes.gridList}>
-            {fileList.map((tile, index) => (
-              <GridListTile key={tile.url} cols={0.666} rows={1}>
-                <img src={tile.url} alt={tile.name} />
-                <GridListTileBar
-                  title={tile.name}
-                  subtitle={<span>大小: {formatImageSize(tile.size)} 原大小: {formatImageSize(tile.originSize)}</span>}
-                  actionIcon={
-                    <Checkbox color="primary" checked={tile.checked} onChange={e => modifyChecked({ checked: e.target.checked, index })} />
-                  }
-                />
-              </GridListTile>
-            ))}
-          </GridList>
-        </Paper>
-      )}
+      {
+        fileList ?.length > 0 && (
+          <Paper className={classes.paper}>
+            <GridList cellHeight={200} className={classes.gridList}>
+              {fileList.map((tile, index) => (
+                <GridListTile key={tile.url} cols={0.666} rows={1}>
+                  <img src={tile.url} alt={tile.name} />
+                  <GridListTileBar
+                    title={tile.name}
+                    subtitle={<span>大小: {formatImageSize(tile.size)} 原大小: {formatImageSize(tile.originSize)}</span>}
+                    actionIcon={
+                      <Checkbox color="primary" checked={tile.checked} onChange={e => modifyChecked({ checked: e.target.checked, index })} />
+                    }
+                  />
+                </GridListTile>
+              ))}
+            </GridList>
+          </Paper>
+        )
+      }
 
       <Dialog
         open={removeModalVisible}
@@ -271,7 +276,7 @@ function ImageKiller (props) {
         </DialogActions>
       </Dialog>
 
-    </Container>
+    </Container >
   )
 }
 

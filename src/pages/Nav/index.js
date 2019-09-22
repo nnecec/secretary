@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { AppBar, Toolbar, Button, CircularProgress } from '@material-ui/core'
+import { AppBar, Toolbar, Button, LinearProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { navList } from './routes'
@@ -14,8 +14,8 @@ const useStyles = makeStyles(theme => ({
   },
   progress: {
     position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1)
+    width: '100%',
+    bottom: 0
   }
 }))
 
@@ -40,8 +40,8 @@ function Nav (props) {
           ))
         }
 
-        {loading && <CircularProgress className={classes.progress} color="secondary" />}
       </Toolbar>
+      {loading && <LinearProgress className={classes.progress} color="secondary" />}
     </AppBar>
   )
 }

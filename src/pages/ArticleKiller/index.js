@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 
-import { Container, Paper, Button, Icon, IconButton } from '@material-ui/core'
-import { FormatBold, FormatItalic, FormatUnderlined, Code } from '@material-ui/icons'
+import { Container, Paper, Button, Icon, IconButton, ButtonGroup } from '@material-ui/core'
+import { FormatBold, FormatItalic, FormatUnderlined, Code, FormatQuote, FormatListNumbered, FormatListBulleted } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
@@ -48,32 +48,28 @@ export default function RichTextExample () {
 
   function renderMarkButton (type, icon) {
     const isActive = hasMark(type)
-
     return (
-      <IconButton className={classes.button} size="small" active={isActive} onMouseDown={event => onClickMark(event, type)}>
+      <Button variant={isActive ? 'contained' : undefined} onMouseDown={event => onClickMark(event, type)}>
         {icon}
-      </IconButton>
+      </Button>
     )
   }
 
   function renderBlockButton (type, icon) {
-    let isActive = hasBlock(type)
+    const isActive = hasBlock(type)
 
-    if (['numbered-list', 'bulleted-list'].includes(type)) {
-      const { document, blocks } = value
+    // if (['numbered-list', 'bulleted-list'].includes(type)) {
+    //   const { document, blocks } = value
 
-      if (blocks.size > 0) {
-        const parent = document.getParent(blocks.first().key)
-        isActive = hasBlock('list-item') && parent && parent.type === type
-      }
-    }
+    //   if (blocks.size > 0) {
+    //     const parent = document.getParent(blocks.first().key)
+    //     isActive = hasBlock('list-item') && parent && parent.type === type
+    //   }
+    // }
 
     return (
-      <Button
-        active={isActive}
-        onMouseDown={event => onClickBlock(event, type)}
-      >
-        <Icon>{icon}</Icon>
+      <Button variant={isActive ? 'contained' : undefined} onMouseDown={event => onClickBlock(event, type)}>
+        {icon}
       </Button>
     )
   }
@@ -101,7 +97,6 @@ export default function RichTextExample () {
 
   function renderMark (props, editor, next) {
     const { children, mark, attributes } = props
-
     switch (mark.type) {
       case 'bold':
         return <strong {...attributes}>{children}</strong>
@@ -116,7 +111,7 @@ export default function RichTextExample () {
     }
   }
 
-  function onKeyDown (event, editor, next) {
+  function onKeyDown (event, next) {
     let mark
 
     if (isBoldHotkey(event)) {
@@ -143,8 +138,7 @@ export default function RichTextExample () {
   function onClickBlock (event, type) {
     event.preventDefault()
 
-    const { editor } = this
-    const { value } = editor
+    const { value } = editor.current
     const { document } = value
 
     // Handle everything but list buttons.
@@ -153,12 +147,12 @@ export default function RichTextExample () {
       const isList = hasBlock('list-item')
 
       if (isList) {
-        editor
+        editor.current
           .setBlocks(isActive ? DEFAULT_NODE : type)
           .unwrapBlock('bulleted-list')
           .unwrapBlock('numbered-list')
       } else {
-        editor.setBlocks(isActive ? DEFAULT_NODE : type)
+        editor.current.setBlocks(isActive ? DEFAULT_NODE : type)
       }
     } else {
       // Handle the extra wrapping required for list buttons.
@@ -168,39 +162,45 @@ export default function RichTextExample () {
       })
 
       if (isList && isType) {
-        editor
+        editor.current
           .setBlocks(DEFAULT_NODE)
           .unwrapBlock('bulleted-list')
           .unwrapBlock('numbered-list')
       } else if (isList) {
-        editor
+        editor.current
           .unwrapBlock(
             type === 'bulleted-list' ? 'numbered-list' : 'bulleted-list'
           )
           .wrapBlock(type)
       } else {
-        editor.setBlocks('list-item').wrapBlock(type)
+        editor.current.setBlocks('list-item').wrapBlock(type)
       }
     }
   }
   return (
     <Container>
       <Paper className={classes.paper}>
-        {renderMarkButton('bold', <FormatBold />)}
-        {renderMarkButton('italic', <FormatItalic />)}
-        {renderMarkButton('underlined', <FormatUnderlined />)}
-        {renderMarkButton('code', <Code />)}
-        {renderBlockButton('heading-one', 'looks_one')}
-        {renderBlockButton('heading-two', 'looks_two')}
-        {renderBlockButton('block-quote', 'format_quote')}
-        {renderBlockButton('numbered-list', 'format_list_numbered')}
-        {renderBlockButton('bulleted-list', 'format_list_bulleted')}
+        <ButtonGroup size="small" style={{ marginRight: 10 }}>
+          {renderMarkButton('bold', <FormatBold />)}
+          {renderMarkButton('italic', <FormatItalic />)}
+          {renderMarkButton('underlined', <FormatUnderlined />)}
+          {renderMarkButton('code', <Code />)}
+        </ButtonGroup>
+
+        <ButtonGroup size="small">
+          {/* {renderBlockButton('heading-one', 'looks_one')} */}
+          {/* {renderBlockButton('heading-two', 'looks_two')} */}
+          {renderBlockButton('block-quote', <FormatQuote />)}
+          {renderBlockButton('numbered-list', <FormatListNumbered />)}
+          {renderBlockButton('bulleted-list', <FormatListBulleted />)}
+        </ButtonGroup>
+
       </Paper>
       <Paper className={classes.paper}>
         <Editor
           spellCheck
           autoFocus
-          placeholder="Enter some rich text..."
+          placeholder="请输入"
           ref={editor}
           value={value}
           onChange={({ value }) => setValue(value)}
