@@ -13,18 +13,13 @@ import { BlockStyleControls, InlineStyleControls } from './editorBar'
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: theme.spacing(2, 0),
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.primary[50]
   },
   button: {
     margin: theme.spacing(1)
   }
 }))
-
-/**
- * Define the default node type.
- *
- * @type {String}
- */
 
 const DEFAULT_NODE = 'paragraph'
 
@@ -56,16 +51,16 @@ export default function RichTextExample () {
   }
 
   function renderBlockButton (type, icon) {
-    const isActive = hasBlock(type)
+    let isActive = hasBlock(type)
 
-    // if (['numbered-list', 'bulleted-list'].includes(type)) {
-    //   const { document, blocks } = value
+    if (['numbered-list', 'bulleted-list'].includes(type)) {
+      const { document, blocks } = value
 
-    //   if (blocks.size > 0) {
-    //     const parent = document.getParent(blocks.first().key)
-    //     isActive = hasBlock('list-item') && parent && parent.type === type
-    //   }
-    // }
+      if (blocks.size > 0) {
+        const parent = document.getParent(blocks.first().key)
+        isActive = hasBlock('list-item') && parent && parent.type === type
+      }
+    }
 
     return (
       <Button variant={isActive ? 'contained' : undefined} onMouseDown={event => onClickBlock(event, type)}>
@@ -111,7 +106,7 @@ export default function RichTextExample () {
     }
   }
 
-  function onKeyDown (event, next) {
+  function onKeyDown (event, _, next) {
     let mark
 
     if (isBoldHotkey(event)) {
